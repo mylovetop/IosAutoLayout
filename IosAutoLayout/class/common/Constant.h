@@ -14,6 +14,8 @@
 #endif
 
 
+//TARGETS-->Build Phases中修改compiler Flags给它添加上: -fobic-arc，就可以让旧项目支持ARC，同样，如果你想自己手动管理内存，也可让项目不支持ARC,只需把添加上:-fno-objc-arc。
+
 //自动布局规则
 //|: 表示父视图
 //-:表示距离

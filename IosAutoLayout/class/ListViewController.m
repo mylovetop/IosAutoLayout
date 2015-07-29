@@ -7,6 +7,7 @@
 //
 
 #import "ListViewController.h"
+#import "ZipArchive.h"
 
 @interface ListViewController ()
 
@@ -19,7 +20,32 @@
     // Do any additional setup after loading the view.
     [self initTopBar:[NSDictionary dictionaryWithObjectsAndKeys:@"列表", @"topBarTitle", nil]];
     UIWebView *webView = [[UIWebView alloc] init];
-    NSURL *url = [NSURL URLWithString:@"http://www.baidu.com"];
+    NSString *fileUrl = @"http://nqdeng.github.io/7-days-nodejs/#2.2";//@"http://www.baidu.com";
+    
+    
+    //使用c语言函数NSSearchPathForDirectoriesInDomains来获取沙盒中目录的全路径
+    NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentationDirectory, NSUserDomainMask, YES);
+    NSString *ourDocumentPath = [documentPaths objectAtIndex:0];
+    NSString *sandBoxPath = NSHomeDirectory();
+    NSString *documentPath = [sandBoxPath stringByAppendingPathComponent:@""];
+    NSString *_fileName = @"h6.html";//@"h5.html";
+    //将Documents添加到sandbox路径上//IosAutoLayout.app
+    NSString *FileName=[documentPath stringByAppendingPathComponent:_fileName];//fileName就是保存文件的文件名
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    // Copy the database sql file from the resourcepath to the documentpath
+    NSURL *url;
+    if ([fileManager fileExistsAtPath:FileName])
+    {
+        url = [NSURL URLWithString:FileName];
+    }else
+    {
+        url = [NSURL URLWithString:fileUrl];
+
+        NSData *data = [NSData dataWithContentsOfURL:url];
+        [data writeToFile:FileName atomically:YES];//将NSData类型对象data写入文件，文件名为FileName
+        
+    }
+ 
     [webView loadRequest:[NSURLRequest requestWithURL:url]];
     [webView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.view addSubview:webView];
@@ -33,7 +59,26 @@
                                                                       options:0
                                                                       metrics:nil
                                                                         views:dicUI]];
+
     
+
+    
+}
+//zip解决
+- (void)OpenZip:(NSString*)zipPath  unzipto:(NSString*)_unzipto
+{
+    //http://code.google.com/p/ziparchive/
+    //http://download.csdn.net/download/u013127097/6889295
+    ZipArchive* zip = [[ZipArchive alloc] init];
+    if( [zip UnzipOpenFile:zipPath] )
+    {
+        BOOL ret = [zip UnzipFileTo:_unzipto overWrite:YES];
+        if( NO==ret )
+        {
+            NSLog(@"error");
+        }
+        [zip UnzipCloseFile];
+    }
 
     
 }
