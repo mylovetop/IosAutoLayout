@@ -10,25 +10,27 @@
 
 @interface RootViewControllerTwo ()
 @property (strong, nonatomic) UIButton *btn;
+@property (strong, nonatomic) UIView *v1;
 @end
 
 
 @implementation RootViewControllerTwo
 @synthesize btn;
+@synthesize v1;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self initTopBar:[NSDictionary dictionaryWithObjectsAndKeys:@"第2个", @"topBarTitle", nil]];
     
-    UIView *view = [[UIView alloc] init];
-    view.backgroundColor = [UIColor greenColor];
-    [self.view addSubview:view];
-    [view setTranslatesAutoresizingMaskIntoConstraints:NO];
+    v1 = [[UIView alloc] init];
+    v1.backgroundColor = [UIColor greenColor];
+    [self.view addSubview:v1];
+    [v1 setTranslatesAutoresizingMaskIntoConstraints:NO];
     
-    NSDictionary *dic = NSDictionaryOfVariableBindings(view);
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view(80)]" options:0 metrics:nil views:dic]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view(80)]" options:0 metrics:nil views:dic]];
+    NSDictionary *dic = NSDictionaryOfVariableBindings(v1);
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[v1(80)]" options:0 metrics:nil views:dic]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[v1(80)]" options:0 metrics:nil views:dic]];
     
     
     btn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -53,6 +55,19 @@
     //注册kvo
     [btn addObserver:self forKeyPath:@"bounds" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionInitial context:nil];
     
+}
+
+- (void)viewDidLayoutSubviews{
+    //http://stackoverflow.com/questions/12943107/how-do-i-adjust-the-anchor-point-of-a-calayer-when-auto-layout-is-being-used/14105757#14105757
+    //How do I adjust the anchor point of a CALayer, when Auto Layout is being used?
+    [super viewDidLayoutSubviews];
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    CATransform3D transform = self.btn.layer.transform;
+    self.btn.layer.transform = CATransform3DIdentity;
+    self.btn.frame = self.v1.bounds;
+    self.btn.layer.transform = transform;
+    [CATransaction commit];
 }
 
 
